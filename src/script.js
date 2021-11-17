@@ -1,15 +1,10 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import * as dat from 'lil-gui'
+
+import Stats from 'three/examples/jsm/libs/stats.module.js'
 import sunVertexShader from './shaders/sun/vertex.glsl'
 import sunFragmentShader from './shaders/sun/fragment.glsl'
-
-/**
- * Base
- */
-// Debug
-const gui = new dat.GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -18,13 +13,12 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 scene.background = new THREE.Color(0.5,0.5,0.5)
 
-/**
- * Test mesh
- */
+//Stats
+const stats = Stats()
+document.body.appendChild(stats.dom)
+
 // Geometry
 const geometry = new THREE.SphereGeometry(5,32,32)
-
-
 
 /**
  * Sizes
@@ -75,6 +69,22 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
+//CubeCamera
+/* let cubeCamera = null
+const addTexture = ()=>{
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256, {
+        format: THREE.RGBFormat,
+        generateMipmaps: true,
+        minFilter: THREE.LinearMipmapLinearFilter,
+        encoding: THREE.sRGBEncoding // temporary -- to prevent the material's shader from recompiling every frame
+    } )
+    cubeCamera = new THREE.CubeCamera( 0.1, 100, cubeRenderTarget );
+}
+
+
+addTexture() */
+
+
 /**
  * Renderer
  */
@@ -93,6 +103,12 @@ const animateScene = () =>
 {
 
     const elapsedTime = clock.getElapsedTime()
+    //Stats
+    stats.update()
+
+    //Render Sphere for Sun
+    //cubeCamera.update( renderer, scene );
+	//material.envMap = cubeRenderTarget1.texture;
 
     //animate Water
     sun.material.uniforms.uTime.value = elapsedTime
