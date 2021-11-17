@@ -1,7 +1,8 @@
 uniform float uTime;
-varying vec2 vUv;
 varying vec3 vPosition;
-
+varying vec3 vLayer0;
+varying vec3 vLayer1;
+varying vec3 vLayer2;
 
 const float PI = 3.14159265359;
 
@@ -123,7 +124,7 @@ float noise (in vec2 _st) {
 }
 
 
- 
+ //Fractional Brownian Motion
 float fbm(vec4 p){
   float sum = 0.0;
   float amp = 1.0;
@@ -137,18 +138,26 @@ float fbm(vec4 p){
   return sum;
 }  
 
+//RGB Channel brightness to color
+vec3 brightnessToColor (float b){
+  b *=0.25;
+  return vec3(b, b*b, b*b*b*b/0.25)*0.6;
+}
+
 void main()
 
 {
-   
-  //float strength = mod(vUv.y * 10.0, 1.0);
-  //strength =step(0.5,strength); 
-
-	//float sunNoise = snoise(vec4(vPosition*0.7,uTime*0.1)); 
-
-  vec4 p = vec4(vPosition * 0.7, uTime*0.15);
-  float sunNoise = fbm(p);
-
-  gl_FragColor = vec4(sunNoise);
   
+
+  //1st layer of noise
+  vec4 p = vec4(vPosition * 0.7, uTime*0.05);
+  float sunNoise = fbm(p);
+  //second layer of noise
+  vec4 p1 = vec4(vPosition*0.7,uTime*0.05);
+
+  float spots =  max(snoise(p1),0.0);
+  float spotMixture = mix(1.0,spots,0.5);
+
+  gl_FragColor = vec4(sunNoise) * spotMixture;
+
 }
